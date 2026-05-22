@@ -136,7 +136,7 @@ export default function JobOrderApp() {
         body: JSON.stringify(form)
       });
       setResult(response.data);
-      setMessage(`Posted invoice. Location: ${response.data.invoiceLocation || "(no location header returned)"}`);
+      setMessage("posted");
       setForm({
         ref: "",
         docDate: today(),
@@ -166,7 +166,25 @@ export default function JobOrderApp() {
         </button>
       </header>
 
-      {message ? <div className="notice">{message}</div> : null}
+      {message ? (
+        <div className="notice">
+          {message === "posted" ? (
+            <>
+              Posted invoice.
+              {result?.invoiceLocation ? (
+                <>
+                  {" "}
+                  <a href={result.invoiceLocation} target="_blank" rel="noreferrer">
+                    Open invoice
+                  </a>
+                </>
+              ) : null}
+            </>
+          ) : (
+            message
+          )}
+        </div>
+      ) : null}
 
       <section className="workspace">
         <form className="panel form" onSubmit={postInvoice}>
@@ -290,22 +308,6 @@ export default function JobOrderApp() {
             {posting ? "Posting..." : "Post to AutoCount"}
           </button>
         </form>
-
-        <section className="panel">
-          <div className="panelHead">
-            <h2>Post Result</h2>
-            <span>No database</span>
-          </div>
-          <div className="orders">
-            <p className="muted">This version only tests AutoCount API posting. It does not save job orders locally.</p>
-            {result?.invoiceLocation ? (
-              <a href={result.invoiceLocation} target="_blank" rel="noreferrer">
-                Invoice location
-              </a>
-            ) : null}
-            <pre>{JSON.stringify(result || { status: "Ready to post" }, null, 2)}</pre>
-          </div>
-        </section>
       </section>
     </main>
   );
